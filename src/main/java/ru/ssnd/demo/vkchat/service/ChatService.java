@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import ru.ssnd.demo.vkchat.entity.Message;
 import ru.ssnd.demo.vkchat.repository.MessagesRepository;
 
 @Service
@@ -30,4 +31,14 @@ public class ChatService {
     }
 
     // TODO Get, send & store messages
+
+    public Message send(Long interlocutorId, String message) {
+        throw new UnsupportedOperationException();
+
+    }
+
+    public Message[] poll(Long id, Long interlocutorId) {
+        throw new UnsupportedOperationException();
+
+    }
 }

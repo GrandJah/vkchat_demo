@@ -29,6 +29,8 @@
 
             $scope.isPolling = false;
 
+            $scope.lasdMessageId = 0;
+
             var isMessageBuffered = function (msgId) {
                 return !!$scope.messagesBuffer.filter(function (msg) {
                     return msg.id === msgId;
@@ -36,7 +38,7 @@
             };
 
             var pollNext = function () {
-                $http.get('/api/chat/' + $scope.master.interlocutorId + '/poll')
+                $http.get('/api/chat/' + $scope.master.interlocutorId + '/poll?lastId=' + $scope.lasdMessageId)
                     .then(function (r) {
                         return r.data
                     })
@@ -44,8 +46,7 @@
                         (r.messages || []).filter(function (msg) {
                             return !isMessageBuffered(msg.id);
                         }).forEach(function (msg) {
-                            msg.sent = $rootScope.appData.selfId === msg.sender.id;
-                            $scope.messagesBuffer.push(msg);
+                            $scope.pushMessage(msg);
                         });
                         pollNext();
                     })
@@ -57,7 +58,7 @@
             };
 
             $scope.startPolling = function () {
-                if(!$scope.isPolling) {
+                if (!$scope.isPolling) {
                     $scope.isPolling = true;
                     pollNext();
                 }
@@ -67,17 +68,33 @@
                 if (!$scope.master.message) {
                     return;
                 }
-                $http.post('/api/chat/' + $scope.master.interlocutorId + '/send')
+                $http.post('/api/chat/' + $scope.master.interlocutorId + '/send', $scope.master.message)
                     .then(function (r) {
                         return r.data
                     })
                     .then(function (r) {
-                        if(!isMessageBuffered(r.message.id)) {
-                            r.message.sent = true;
-                            $scope.messagesBuffer.push(r.message);
+                        if (!isMessageBuffered(r.message.id)) {
+                            $scope.pushMessage(r.message);
                         }
+                    })
+                    .then(function () {
+                        $scope.master.message = "";
                     });
             };
+
+            $scope.pushMessage = function (message) {
+                $scope.lasdMessageId = $scope.lasdMessageId > message.id ? $scope.lasdMessageId : message.id;
+                message.sent = $rootScope.appData.selfId === message.sender.id;
+                $scope.messagesBuffer.push(message);
+            };
+
+            $scope.$watch(function () {
+                    return document.body.scrollHeight;
+                },
+                function (newValue) {
+                    document.body.scroll(0, newValue)
+                });
+
 
         });
 })();

@@ -38,6 +38,9 @@
             var pollNext = function () {
                 $http.get('/api/chat/' + $scope.master.interlocutorId + '/poll')
                     .then(function (r) {
+                        return r.data
+                    })
+                    .then(function (r) {
                         (r.messages || []).filter(function (msg) {
                             return !isMessageBuffered(msg.id);
                         }).forEach(function (msg) {
@@ -66,20 +69,11 @@
                 }
                 $http.post('/api/chat/' + $scope.master.interlocutorId + '/send')
                     .then(function (r) {
-                        r = {
-                            message:
-                                {
-                                    id: 3,
-                                    sent: true,
-                                    sender: {
-                                        avatarUrl: 'https://vgy.me/8zipf9.png',
-                                        name: 'Я грустный кот'
-                                    },
-                                    sentAt: '2018-10-01T18:12:01Z',
-                                    text: '!!!Хочу смеяться 15 минут!'
-                                }
-                        };
+                        return r.data
+                    })
+                    .then(function (r) {
                         if(!isMessageBuffered(r.message.id)) {
+                            r.message.sent = true;
                             $scope.messagesBuffer.push(r.message);
                         }
                     });

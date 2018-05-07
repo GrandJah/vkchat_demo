@@ -1,7 +1,6 @@
 package ru.ssnd.demo.vkchat.controller;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,7 +36,7 @@ public class ChatController {
     @PostMapping("{interlocutorId}/send")
     public Response send(@PathVariable Long interlocutorId, @RequestBody String message) {
         return new Response.Builder()
-                .withField("message", new JSONObject(chatService.send(interlocutorId, message)))
+                .withField("message", chatService.send(interlocutorId, message))
                 .build();
     }
 

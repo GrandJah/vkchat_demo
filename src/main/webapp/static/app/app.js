@@ -70,15 +70,10 @@
                 }
                 $http.post('/api/chat/' + $scope.master.interlocutorId + '/send', $scope.master.message)
                     .then(function (r) {
-                        return r.data
-                    })
-                    .then(function (r) {
-                        if (!isMessageBuffered(r.message.id)) {
-                            $scope.pushMessage(r.message);
+                        if (r.data.message) {
+                            $scope.startPolling();
+                            $scope.master.message = "";
                         }
-                    })
-                    .then(function () {
-                        $scope.master.message = "";
                     });
             };
 
